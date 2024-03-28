@@ -9,6 +9,7 @@ import { SubscribeToNewsletterDocument } from '../generated/graphql';
 
 
 function PublicationSubscribeStandOut() {
+
   const { publication } = useAppContext();
   const [, subscribeToNewsletter] = useMutation(SubscribeToNewsletterDocument);
 
@@ -18,6 +19,39 @@ function PublicationSubscribeStandOut() {
     subscribed: false,
   });
   const email = useRef<HTMLInputElement>(null);
+
+  // const subscribe = async () => {
+  //   if (!publication || !email.current) {
+  //     return;
+  //   }
+
+  //   const emailVal = email.current.value;
+  //   const publicationId = publication.id?.toString();
+
+  //   if (!emailVal.trim()) {
+  //     return;
+  //   }
+  //   if (!isEmail(emailVal)) {
+  //     setState({ ...state, err: 'Please enter a valid email' });
+  //     return;
+  //   }
+  //   setState({ ...state, submitDisabled: true });
+  //   const { data, error } = await subscribeToNewsletter({
+  //     input: {
+  //       publicationId,
+  //       email: emailVal,
+  //     },
+  //   });
+  //   const _state = { submitDisabled: false, err: '', subscribed: false };
+
+  //   if (!data?.subscribeToNewsletter.status || error) {
+  //     _state.err = error?.graphQLErrors[0].message || 'Something went wrong. Please try again.';
+  //   } else {
+  //     _state.subscribed = true;
+  //     _state.err = '';
+  //   }
+  //   setState({ ...state, ..._state });
+  // };
 
   const subscribe = async () => {
     if (!publication || !email.current) {
@@ -35,22 +69,66 @@ function PublicationSubscribeStandOut() {
       return;
     }
     setState({ ...state, submitDisabled: true });
-    const { data, error } = await subscribeToNewsletter({
-      input: {
-        publicationId,
-        email: emailVal,
-      },
-    });
-    const _state = { submitDisabled: false, err: '', subscribed: false };
 
-    if (!data?.subscribeToNewsletter.status || error) {
-      _state.err = error?.graphQLErrors[0].message || 'Something went wrong. Please try again.';
-    } else {
-      _state.subscribed = true;
-      _state.err = '';
+    try {
+      const response = await fetch('https://plsyr2semi.execute-api.us-east-1.amazonaws.com/dev/subscribe', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: emailVal,
+          subscriptionTopic: ['mobile-blog']
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to subscribe to newsletter');
+      }
+
+      const dataCustome = await response.json();
+      const { data, error } = await subscribeToNewsletter({
+        input: {
+          publicationId,
+          email: emailVal,
+          // blogTitle: 'mobile-blog',
+        },
+      });
+      const _state = { submitDisabled: false, err: '', subscribed: false };
+      if (!data?.subscribeToNewsletter.status || error) {
+            _state.err = error?.graphQLErrors[0].message || 'Something went wrong. Please try again.';
+          } else {
+            _state.subscribed = true;
+            _state.err = '';
+          }
+          setState({ ...state, ..._state });
+      // setState({
+      //   submitDisabled: false,
+      //   err: '',
+      //   subscribed: true,
+      // });
+      // if (!data.status) {
+      //   setState({
+      //     submitDisabled: false,
+      //     err: data.error || 'Something went wrong. Please try again.',
+      //     subscribed: false,
+      //   });
+      // } else {
+      //   setState({
+      //     submitDisabled: false,
+      //     err: '',
+      //     subscribed: true,
+      //   });
+      // }
+    } catch (error) {
+      setState({
+        submitDisabled: false,
+        err: error.message || 'Something went wrong. Please try again.',
+        subscribed: false,
+      });
     }
-    setState({ ...state, ..._state });
   };
+
 
   const handleEmailChange = (e: { keyCode: number }) => {
     if (state.err) {
