@@ -1884,6 +1884,18 @@ export type PagesPreferences = {
   newsletter?: Maybe<Scalars['Boolean']['output']>;
 };
 
+export type PendingInvite = Node & {
+  __typename?: 'PendingInvite';
+  /** The email of the user that was invited. */
+  email?: Maybe<Scalars['String']['output']>;
+  /** The ID of the pending invite. */
+  id: Scalars['ID']['output'];
+  /** The role assigned to the user in the publication. */
+  role: UserPublicationRole;
+  /** Invited Hashnode user, returns null if the user is not a Hashnode user. */
+  user?: Maybe<User>;
+};
+
 /** Contains basic information about the tag returned by popularTags query. */
 export type PopularTag = ITag & Node & {
   __typename?: 'PopularTag';

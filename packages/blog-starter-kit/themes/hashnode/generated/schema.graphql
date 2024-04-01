@@ -1762,6 +1762,19 @@ type PagesPreferences {
   newsletter: Boolean
 }
 
+type PendingInvite implements Node {
+  """The email of the user that was invited."""
+  email: String
+  """The ID of the pending invite."""
+  id: ID!
+  """The role assigned to the user in the publication."""
+  role: UserPublicationRole!
+  """
+  Invited Hashnode user, returns null if the user is not a Hashnode user.
+  """
+  user: User
+}
+
 """
 Contains basic information about the tag returned by popularTags query.
 """
