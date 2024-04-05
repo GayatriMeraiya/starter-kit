@@ -69,7 +69,7 @@ function PublicationSubscribeStandOut() {
       return;
     }
     setState({ ...state, submitDisabled: true });
-alert('ds');
+
     try {
       const response = await fetch('https://plsyr2semi.execute-api.us-east-1.amazonaws.com/dev/subscribe', {
         method: 'POST',
@@ -120,7 +120,7 @@ alert('ds');
       //     subscribed: true,
       //   });
       // }
-    } catch (error) {
+    } catch (error:any) {
       setState({
         submitDisabled: false,
         err: error.message || 'Something went wrong. Please try again.',
